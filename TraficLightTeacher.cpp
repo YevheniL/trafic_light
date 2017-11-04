@@ -169,7 +169,7 @@ void TrafficLight_AllLampsOff(void){
 void DelayAndHeartbeat(unsigned short time){
 	static bool heartbeatState = false;
 
-	for (unsigned short seconds = 0; seconds < (time*2); seconds ++){
+	for (unsigned short seconds = 0; seconds < (time); seconds ++){
 		delay(DELAY_HALF_SECOND);
 		heartbeatState = !heartbeatState;
 		if (heartbeatState){
