@@ -1,10 +1,10 @@
 #include "TraficLightTeacher.h"
 
-#define TRAFFIC_LIGHT_CARS_RED_LAMP			6		/// Digital output pin number for the traffic light red lamp for cars
-#define TRAFFIC_LIGHT_CARS_YELLOW_LAMP		5		/// Digital output pin number for the traffic light yellow lamp for cars
-#define TRAFFIC_LIGHT_CARS_GREEN_LAMP		4		/// Digital output pin number for the traffic light green lamp for cars
-#define TRAFFIC_LIGHT_PEDESTRIAN_RED_LAMP	3		/// Digital output pin number for the traffic light red lamp for pedestrian
-#define TRAFFIC_LIGHT_PEDESTRIAN_GREEN_LAMP	2		/// Digital output pin number for the traffic light green lamp for pedestrian
+#define TRAFIC_LIGHT_CARS_RED_LAMP			6		/// Digital output pin number for the traffic light red lamp for cars
+#define TRAFIC_LIGHT_CARS_YELLOW_LAMP		5		/// Digital output pin number for the traffic light yellow lamp for cars
+#define TRAFIC_LIGHT_CARS_GREEN_LAMP		4		/// Digital output pin number for the traffic light green lamp for cars
+#define TRAFIC_LIGHT_PEDESTRIAN_RED_LAMP	3		/// Digital output pin number for the traffic light red lamp for pedestrian
+#define TRAFIC_LIGHT_PEDESTRIAN_GREEN_LAMP	2		/// Digital output pin number for the traffic light green lamp for pedestrian
 
 #define HEARTBEAT_LED	13		/// Digital output pin number for the heartbeat LED
 
@@ -72,18 +72,20 @@ void TrafficLight_AllLampsOff(void);
  */
 void DelayAndHeartbeat(unsigned short time);
 
+void LED1_Blink_Run(unsigned int period );
 
+void LED2_Blink_Run(unsigned int period );
 
 //The setup function is called once at startup of the sketch
 void setup()
 {
 	// Outputs initialization
 	pinMode(HEARTBEAT_LED, OUTPUT);
-	pinMode(TRAFFIC_LIGHT_CARS_RED_LAMP, OUTPUT);
-	pinMode(TRAFFIC_LIGHT_CARS_YELLOW_LAMP, OUTPUT);
-	pinMode(TRAFFIC_LIGHT_CARS_GREEN_LAMP, OUTPUT);
-	pinMode(TRAFFIC_LIGHT_PEDESTRIAN_RED_LAMP, OUTPUT);
-	pinMode(TRAFFIC_LIGHT_PEDESTRIAN_GREEN_LAMP, OUTPUT);
+	pinMode(TRAFIC_LIGHT_CARS_RED_LAMP, OUTPUT);
+	pinMode(TRAFIC_LIGHT_CARS_YELLOW_LAMP, OUTPUT);
+	pinMode(TRAFIC_LIGHT_CARS_GREEN_LAMP, OUTPUT);
+	pinMode(TRAFIC_LIGHT_PEDESTRIAN_RED_LAMP, OUTPUT);
+	pinMode(TRAFIC_LIGHT_PEDESTRIAN_GREEN_LAMP, OUTPUT);
 
 	// Outputs safety states write
 	digitalWrite(HEARTBEAT_LED, HEARTBEAT_LED_OFF);
@@ -93,16 +95,87 @@ void setup()
 // The loop function is called in an endless loop
 void loop()
 {
-	if (isServiceMode){
+
+	TrafficLight1_Run();
+	TrafficLight2_Run();
+	Heartbeat_Run();
+
+	typedef enum{
+		ServiceMode,
+		GreenMode,
+		GreenBlink,
+		YellowMode,
+		RedMode,
+		RedAndYellowMode
+	}trafficLightModes_t;
+
+	trafficLightModes_t state;
+
+
+
+	switch (state) {
+	case ServiceMode:
 		TrafficLight_ModeService(TRAFFIC_LIGHT_MODE_TIME_SERVICE);
-		isServiceMode = false;
-	}
-	else{
+		break;
+	case GreenMode:
 		TrafficLight_ModeGreen(TRAFFIC_LIGHT_MODE_TIME_GREEN);
+		break;
+	case GreenBlink:
 		TrafficLight_ModeGreenBlink(TRAFFIC_LIGHT_MODE_TIME_GREEN_BLINK);
-		TrafficLight_ModeYellow(TRAFFIC_LIGHT_MODE_TIME_YELLOW);
-		TrafficLight_ModeRed(TRAFFIC_LIGHT_MODE_TIME_RED);
-		TrafficLight_ModeRedAndYellow(TRAFFIC_LIGHT_MODE_TIME_RED_YELOW);
+		break;
+	default:
+		TrafficLight_ModeService(TRAFFIC_LIGHT_MODE_TIME_SERVICE);
+
+	}
+
+//	if (isServiceMode){
+//		TrafficLight_ModeService(TRAFFIC_LIGHT_MODE_TIME_SERVICE);
+//		isServiceMode = false;
+//	}
+//	else{
+//		TrafficLight_ModeGreen(TRAFFIC_LIGHT_MODE_TIME_GREEN);
+//		TrafficLight_ModeGreenBlink(TRAFFIC_LIGHT_MODE_TIME_GREEN_BLINK);
+//		TrafficLight_ModeYellow(TRAFFIC_LIGHT_MODE_TIME_YELLOW);
+//		TrafficLight_ModeRed(TRAFFIC_LIGHT_MODE_TIME_RED);
+//		TrafficLight_ModeRedAndYellow(TRAFFIC_LIGHT_MODE_TIME_RED_YELOW);
+//	}
+}
+
+void LED1_Blink_Run(unsigned int period){
+	static unsigned long saveTime = 0;
+	unsigned long currentTime = 0;
+	static bool LED_state = false;
+
+	currentTime = millis();
+
+	if ( (currentTime - saveTime) >= period ){
+		if (LED_state){
+			digitalWrite(TRAFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_ON);
+		}
+		else{
+			digitalWrite(TRAFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
+		}
+		LED_state = !LED_state;
+		saveTime = millis();
+	}
+}
+
+void LED2_Blink_Run(unsigned int period){
+	static unsigned long saveTime = 0;
+	unsigned long currentTime = 0;
+	static bool LED_state = false;
+
+	currentTime = millis();
+
+	if ( (currentTime - saveTime) >= period ){
+		if (LED_state){
+			digitalWrite(TRAFIC_LIGHT_CARS_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_ON);
+		}
+		else{
+			digitalWrite(TRAFIC_LIGHT_CARS_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
+		}
+		LED_state = !LED_state;
+		saveTime = millis();
 	}
 }
 
@@ -111,9 +184,9 @@ void TrafficLight_ModeService(unsigned short time){
 	TrafficLight_AllLampsOff();
 
 	for (unsigned short seconds = 0; seconds < time; seconds ++){
-		digitalWrite(TRAFFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_ON);
+		digitalWrite(TRAFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_ON);
 		DelayAndHeartbeat(1);
-		digitalWrite(TRAFFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
+		digitalWrite(TRAFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
 		DelayAndHeartbeat(1);
 	}
 }
@@ -121,22 +194,22 @@ void TrafficLight_ModeService(unsigned short time){
 void TrafficLight_ModeRed(unsigned short time){
 	TrafficLight_AllLampsOff();
 
-	digitalWrite(TRAFFIC_LIGHT_CARS_RED_LAMP, TRAFFIC_LIGHT_LAMP_ON);
+	digitalWrite(TRAFIC_LIGHT_CARS_RED_LAMP, TRAFFIC_LIGHT_LAMP_ON);
 	DelayAndHeartbeat(time * 2);
 }
 
 void TrafficLight_ModeRedAndYellow(unsigned short time){
 	TrafficLight_AllLampsOff();
 
-	digitalWrite(TRAFFIC_LIGHT_CARS_RED_LAMP, TRAFFIC_LIGHT_LAMP_ON);
-	digitalWrite(TRAFFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_ON);
+	digitalWrite(TRAFIC_LIGHT_CARS_RED_LAMP, TRAFFIC_LIGHT_LAMP_ON);
+	digitalWrite(TRAFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_ON);
 	DelayAndHeartbeat(time);
 }
 
 void TrafficLight_ModeGreen(unsigned short time){
 	TrafficLight_AllLampsOff();
 
-	digitalWrite(TRAFFIC_LIGHT_CARS_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_ON);
+	digitalWrite(TRAFIC_LIGHT_CARS_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_ON);
 	DelayAndHeartbeat(time);
 }
 
@@ -144,9 +217,9 @@ void TrafficLight_ModeGreenBlink(unsigned short time){
 	TrafficLight_AllLampsOff();
 
 	for (unsigned short seconds = 0; seconds < time; seconds ++){
-		digitalWrite(TRAFFIC_LIGHT_CARS_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_ON);
+		digitalWrite(TRAFIC_LIGHT_CARS_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_ON);
 		DelayAndHeartbeat(1);
-		digitalWrite(TRAFFIC_LIGHT_CARS_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
+		digitalWrite(TRAFIC_LIGHT_CARS_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
 		DelayAndHeartbeat(1);
 	}
 }
@@ -154,22 +227,22 @@ void TrafficLight_ModeGreenBlink(unsigned short time){
 void TrafficLight_ModeYellow(unsigned short time){
 	TrafficLight_AllLampsOff();
 
-	digitalWrite(TRAFFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_ON);
+	digitalWrite(TRAFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_ON);
 	DelayAndHeartbeat(time);
 }
 
 void TrafficLight_AllLampsOff(void){
-	digitalWrite(TRAFFIC_LIGHT_CARS_RED_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
-	digitalWrite(TRAFFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
-	digitalWrite(TRAFFIC_LIGHT_CARS_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
-	digitalWrite(TRAFFIC_LIGHT_PEDESTRIAN_RED_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
-	digitalWrite(TRAFFIC_LIGHT_PEDESTRIAN_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
+	digitalWrite(TRAFIC_LIGHT_CARS_RED_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
+	digitalWrite(TRAFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
+	digitalWrite(TRAFIC_LIGHT_CARS_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
+	digitalWrite(TRAFIC_LIGHT_PEDESTRIAN_RED_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
+	digitalWrite(TRAFIC_LIGHT_PEDESTRIAN_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
 }
 
 void DelayAndHeartbeat(unsigned short time){
 	static bool heartbeatState = false;
 
-	for (unsigned short seconds = 0; seconds < (time); seconds ++){
+	for (unsigned short seconds = 0; seconds < (time*2); seconds ++){
 		delay(DELAY_HALF_SECOND);
 		heartbeatState = !heartbeatState;
 		if (heartbeatState){
