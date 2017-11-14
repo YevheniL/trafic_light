@@ -1,10 +1,16 @@
 #include "TraficLightTeacher.h"
 
-#define TRAFIC_LIGHT_CARS_RED_LAMP			6		/// Digital output pin number for the traffic light red lamp for cars
-#define TRAFIC_LIGHT_CARS_YELLOW_LAMP		5		/// Digital output pin number for the traffic light yellow lamp for cars
-#define TRAFIC_LIGHT_CARS_GREEN_LAMP		4		/// Digital output pin number for the traffic light green lamp for cars
-#define TRAFIC_LIGHT_PEDESTRIAN_RED_LAMP	3		/// Digital output pin number for the traffic light red lamp for pedestrian
-#define TRAFIC_LIGHT_PEDESTRIAN_GREEN_LAMP	2		/// Digital output pin number for the traffic light green lamp for pedestrian
+#include "cCrossRoad.h"
+#include "cCrossroadShedule.h"
+#include "cTrafficLight.h"
+#include "cTrafficLightPedestrian.h"
+
+
+#define TRAFFIC_LIGHT_CARS_RED_LAMP			6		/// Digital output pin number for the traffic light red lamp for cars
+#define TRAFFIC_LIGHT_CARS_YELLOW_LAMP		5		/// Digital output pin number for the traffic light yellow lamp for cars
+#define TRAFFIC_LIGHT_CARS_GREEN_LAMP		4		/// Digital output pin number for the traffic light green lamp for cars
+#define TRAFFIC_LIGHT_PEDESTRIAN_RED_LAMP	3		/// Digital output pin number for the traffic light red lamp for pedestrian
+#define TRAFFIC_LIGHT_PEDESTRIAN_GREEN_LAMP	2		/// Digital output pin number for the traffic light green lamp for pedestrian
 
 #define HEARTBEAT_LED	13		/// Digital output pin number for the heartbeat LED
 
@@ -13,6 +19,7 @@
 
 #define HEARTBEAT_LED_ON	HIGH		/// Heartbeat LED pin active level
 #define HEARTBEAT_LED_OFF	LOW			///	Heartbeat LED pin not active level
+#define HEARTBEAT_PERIOD 	500			/// heartbeat period = 500
 
 #define TRAFFIC_LIGHT_MODE_TIME_SERVICE		10		/// Service mode duration in seconds
 #define TRAFFIC_LIGHT_MODE_TIME_GREEN		6		///	Green mode duration in seconds
@@ -23,233 +30,80 @@
 
 #define DELAY_HALF_SECOND		500
 
-bool isServiceMode = true;
+#define TRAFFIC_LIGHTS_AMAUNT	2
+#define CROSSROAD_STEPS_AMOUNT	4
 
-/**
- * The Service mode of traffic light. Yellow lamp is blinking with period 1 second during a time defined in the parameter time.
- * @param time - mode duration in seconds.
- */
-void TrafficLight_ModeService(unsigned short time);
+void Heartbeat_Run( unsigned int period );
 
-/**
- * The Red mode of traffic light. The red lamp is lighting constantly during a time defined in the parameter time.
- * @param time - mode duration in seconds.
- */
-void TrafficLight_ModeRed(unsigned short time);
+//uint8_t steps[CROSSROAD_STEPS_AMOUNT][TRAFFIC_LIGHTS_AMAUNT+1] = {
+////StepTime  |  Cars_M	       | Pedesrian_M  |	Cars_S	 |	Pedesrian_S
+//	{10, 		GreenMode,			RedMode,	RedMode,	GreenMode		},
+//	{5,			GreenBlinkMode,		RedMode,	RedMode,	GreenBlinkMode	},
+//	{5,			YellowMode,			RedMode,	RedMode,	RedMode			},
+//	{10,		RedMode,			GreenMode,	GreenMode,	RedMode			}
+//};
 
-/**
- * The Red plus Yellow safety mode of traffic light. Red and Yellow lamps are lighting constantly during a time defined in the parameter time.
- * @param time - mode duration in seconds.
- */
-void TrafficLight_ModeRedAndYellow(unsigned short time);
+uint8_t steps[CROSSROAD_STEPS_AMOUNT][TRAFFIC_LIGHTS_AMAUNT+1] = {
+//StepTime  |  Pedesrian_M   |	Pedesrian_S
+	{5, 	RedMode,	GreenMode		},
+	{5,		GreenMode,	RedMode			},
+	{10,	RedMode,	RedMode			},
+	{15,	GreenMode,	GreenMode		},
+};
 
-/**
- * The Green mode of traffic light. The red lamp is lighting constantly during a time defined in the parameter time.
- * @param time - mode duration in seconds.
- */
-void TrafficLight_ModeGreen(unsigned short time);
+schedule_t schedule = {
+		(TRAFFIC_LIGHTS_AMAUNT+1),
+		CROSSROAD_STEPS_AMOUNT,
+		&steps[0][0]
+};
 
-/**
- * The Green Blink mode of traffic light. The green lamp is blinking with period 1 second during a time defined in the parameter time.
- * @param time - mode duration in seconds.
- */
-void TrafficLight_ModeGreenBlink(unsigned short time);
+cCrossroadShedule crossroadSchedule(&schedule);
 
-/**
- * The Yellow mode of traffic light. The yellow lamp is lighting constantly during a time defined in the parameter time.
- * @param time - mode duration in seconds.
- */
-void TrafficLight_ModeYellow(unsigned short time);
+cTrafficLightPedestrian TrafficLightPedestrianMain	(10, HIGH, LOW,  9, HIGH, LOW,  500);
+cTrafficLightPedestrian TrafficLightPedestrianSecond( 5, LOW,  HIGH, 4, LOW,  HIGH, 500);
 
-/**
- * Turn off all lamps of traffic light
- */
-void TrafficLight_AllLampsOff(void);
 
-/**
- * Delay and heartbeat function. Function adds delay to program. Heartbeat LED is blinking with period 0.5 seconds during pause.
- * @param time - delay duration in seconds
- */
-void DelayAndHeartbeat(unsigned short time);
+cTrafficLight *trafficLightsList[] = {
+		(cTrafficLight *)&TrafficLightPedestrianMain,
+	    (cTrafficLight *)&TrafficLightPedestrianSecond
+};
 
-void LED1_Blink_Run(unsigned int period );
 
-void LED2_Blink_Run(unsigned int period );
+cCrossRoad CrossRoad(trafficLightsList, TRAFFIC_LIGHTS_AMAUNT, &crossroadSchedule);
 
 //The setup function is called once at startup of the sketch
 void setup()
 {
 	// Outputs initialization
 	pinMode(HEARTBEAT_LED, OUTPUT);
-	pinMode(TRAFIC_LIGHT_CARS_RED_LAMP, OUTPUT);
-	pinMode(TRAFIC_LIGHT_CARS_YELLOW_LAMP, OUTPUT);
-	pinMode(TRAFIC_LIGHT_CARS_GREEN_LAMP, OUTPUT);
-	pinMode(TRAFIC_LIGHT_PEDESTRIAN_RED_LAMP, OUTPUT);
-	pinMode(TRAFIC_LIGHT_PEDESTRIAN_GREEN_LAMP, OUTPUT);
 
 	// Outputs safety states write
 	digitalWrite(HEARTBEAT_LED, HEARTBEAT_LED_OFF);
-	TrafficLight_AllLampsOff();
+
+	Serial.begin(115200);
 }
 
 // The loop function is called in an endless loop
 void loop()
 {
-
-	TrafficLight1_Run();
-	TrafficLight2_Run();
-	Heartbeat_Run();
-
-	typedef enum{
-		ServiceMode,
-		GreenMode,
-		GreenBlink,
-		YellowMode,
-		RedMode,
-		RedAndYellowMode
-	}trafficLightModes_t;
-
-	trafficLightModes_t state;
-
-
-
-	switch (state) {
-	case ServiceMode:
-		TrafficLight_ModeService(TRAFFIC_LIGHT_MODE_TIME_SERVICE);
-		break;
-	case GreenMode:
-		TrafficLight_ModeGreen(TRAFFIC_LIGHT_MODE_TIME_GREEN);
-		break;
-	case GreenBlink:
-		TrafficLight_ModeGreenBlink(TRAFFIC_LIGHT_MODE_TIME_GREEN_BLINK);
-		break;
-	default:
-		TrafficLight_ModeService(TRAFFIC_LIGHT_MODE_TIME_SERVICE);
-
-	}
-
-//	if (isServiceMode){
-//		TrafficLight_ModeService(TRAFFIC_LIGHT_MODE_TIME_SERVICE);
-//		isServiceMode = false;
-//	}
-//	else{
-//		TrafficLight_ModeGreen(TRAFFIC_LIGHT_MODE_TIME_GREEN);
-//		TrafficLight_ModeGreenBlink(TRAFFIC_LIGHT_MODE_TIME_GREEN_BLINK);
-//		TrafficLight_ModeYellow(TRAFFIC_LIGHT_MODE_TIME_YELLOW);
-//		TrafficLight_ModeRed(TRAFFIC_LIGHT_MODE_TIME_RED);
-//		TrafficLight_ModeRedAndYellow(TRAFFIC_LIGHT_MODE_TIME_RED_YELOW);
-//	}
+	Heartbeat_Run( HEARTBEAT_PERIOD );
+	CrossRoad.run();
 }
 
-void LED1_Blink_Run(unsigned int period){
-	static unsigned long saveTime = 0;
-	unsigned long currentTime = 0;
-	static bool LED_state = false;
+void Heartbeat_Run( unsigned int period ){
+	static unsigned int saveTime = 0;
+	unsigned int currentTime = 0;
+	static bool state = false;
 
 	currentTime = millis();
-
-	if ( (currentTime - saveTime) >= period ){
-		if (LED_state){
-			digitalWrite(TRAFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_ON);
+	if ((currentTime - saveTime) >= period) {
+		if (state) {
+			digitalWrite( HEARTBEAT_LED, HEARTBEAT_LED_ON);
+		} else {
+			digitalWrite( HEARTBEAT_LED, HEARTBEAT_LED_OFF);
 		}
-		else{
-			digitalWrite(TRAFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
-		}
-		LED_state = !LED_state;
+		state = !state;
 		saveTime = millis();
 	}
 }
 
-void LED2_Blink_Run(unsigned int period){
-	static unsigned long saveTime = 0;
-	unsigned long currentTime = 0;
-	static bool LED_state = false;
-
-	currentTime = millis();
-
-	if ( (currentTime - saveTime) >= period ){
-		if (LED_state){
-			digitalWrite(TRAFIC_LIGHT_CARS_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_ON);
-		}
-		else{
-			digitalWrite(TRAFIC_LIGHT_CARS_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
-		}
-		LED_state = !LED_state;
-		saveTime = millis();
-	}
-}
-
-void TrafficLight_ModeService(unsigned short time){
-
-	TrafficLight_AllLampsOff();
-
-	for (unsigned short seconds = 0; seconds < time; seconds ++){
-		digitalWrite(TRAFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_ON);
-		DelayAndHeartbeat(1);
-		digitalWrite(TRAFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
-		DelayAndHeartbeat(1);
-	}
-}
-
-void TrafficLight_ModeRed(unsigned short time){
-	TrafficLight_AllLampsOff();
-
-	digitalWrite(TRAFIC_LIGHT_CARS_RED_LAMP, TRAFFIC_LIGHT_LAMP_ON);
-	DelayAndHeartbeat(time * 2);
-}
-
-void TrafficLight_ModeRedAndYellow(unsigned short time){
-	TrafficLight_AllLampsOff();
-
-	digitalWrite(TRAFIC_LIGHT_CARS_RED_LAMP, TRAFFIC_LIGHT_LAMP_ON);
-	digitalWrite(TRAFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_ON);
-	DelayAndHeartbeat(time);
-}
-
-void TrafficLight_ModeGreen(unsigned short time){
-	TrafficLight_AllLampsOff();
-
-	digitalWrite(TRAFIC_LIGHT_CARS_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_ON);
-	DelayAndHeartbeat(time);
-}
-
-void TrafficLight_ModeGreenBlink(unsigned short time){
-	TrafficLight_AllLampsOff();
-
-	for (unsigned short seconds = 0; seconds < time; seconds ++){
-		digitalWrite(TRAFIC_LIGHT_CARS_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_ON);
-		DelayAndHeartbeat(1);
-		digitalWrite(TRAFIC_LIGHT_CARS_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
-		DelayAndHeartbeat(1);
-	}
-}
-
-void TrafficLight_ModeYellow(unsigned short time){
-	TrafficLight_AllLampsOff();
-
-	digitalWrite(TRAFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_ON);
-	DelayAndHeartbeat(time);
-}
-
-void TrafficLight_AllLampsOff(void){
-	digitalWrite(TRAFIC_LIGHT_CARS_RED_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
-	digitalWrite(TRAFIC_LIGHT_CARS_YELLOW_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
-	digitalWrite(TRAFIC_LIGHT_CARS_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
-	digitalWrite(TRAFIC_LIGHT_PEDESTRIAN_RED_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
-	digitalWrite(TRAFIC_LIGHT_PEDESTRIAN_GREEN_LAMP, TRAFFIC_LIGHT_LAMP_OFF);
-}
-
-void DelayAndHeartbeat(unsigned short time){
-	static bool heartbeatState = false;
-
-	for (unsigned short seconds = 0; seconds < (time*2); seconds ++){
-		delay(DELAY_HALF_SECOND);
-		heartbeatState = !heartbeatState;
-		if (heartbeatState){
-			digitalWrite(HEARTBEAT_LED, HEARTBEAT_LED_ON);
-		}
-		else{
-			digitalWrite(HEARTBEAT_LED, HEARTBEAT_LED_OFF);
-		}
-	}
-}
