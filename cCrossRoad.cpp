@@ -24,21 +24,11 @@ void cCrossRoad::run(){
 		if (step >= Schedule->nSteps){
 			step = 0;
 		}
-		Serial.print("Step: ");
-		Serial.print(step);
-		Serial.print(" nStep: ");
-		Serial.print(Schedule->nSteps);
-		Serial.print(" StepDuration: ");
-		stepDuration = 1000 * Schedule->getState(step, 0);
-		Serial.print(stepDuration);
 
 		for (uint8_t i = 0; i < trafficLightsAmount; i++){
 			cTraficLightModes newMode = Schedule->getState(step, i+1);
 			TrafficLightsList[i]->setMode(newMode);
-			Serial.print(" mode: ");
-			Serial.print(newMode);
 		}
-		Serial.print(" *\r\n");
 		stepSaveTime = millis();
 	}
 

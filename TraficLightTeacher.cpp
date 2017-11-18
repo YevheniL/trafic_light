@@ -35,14 +35,6 @@
 
 void Heartbeat_Run( unsigned int period );
 
-//uint8_t steps[CROSSROAD_STEPS_AMOUNT][TRAFFIC_LIGHTS_AMAUNT+1] = {
-////StepTime  |  Cars_M	       | Pedesrian_M  |	Cars_S	 |	Pedesrian_S
-//	{10, 		GreenMode,			RedMode,	RedMode,	GreenMode		},
-//	{5,			GreenBlinkMode,		RedMode,	RedMode,	GreenBlinkMode	},
-//	{5,			YellowMode,			RedMode,	RedMode,	RedMode			},
-//	{10,		RedMode,			GreenMode,	GreenMode,	RedMode			}
-//};
-
 uint8_t steps[CROSSROAD_STEPS_AMOUNT][TRAFFIC_LIGHTS_AMAUNT+1] = {
 //StepTime  |  Pedesrian_M   |	Pedesrian_S
 	{5, 	RedMode,	GreenMode		},
