@@ -1,27 +1,26 @@
 /*
  * cTrafficLight.h
  *
- *  Created on: Nov 21, 2017
- *      Author: SAK
+ *  Created on: 25 םמÿב. 2017 ד.
+ *      Author: ÃÏÂ
  */
 
 #ifndef CTRAFFICLIGHT_H_
 #define CTRAFFICLIGHT_H_
 
-typedef enum cTrafficLightModes{
-	ModeGreen,
-	ModeGreenBlink,
-	ModeYellow,
-	ModeRed,
-	ModeRedAndYellow,
-	ModeAmount
-};
+typedef enum{
+	modeGreen,
+	modeGreenBlink,
+	modeRed,
+	modeYellow,
+	modeRedYellow
+}TrafficLightModes_t;
 
 class cTrafficLight {
 public:
 	virtual void Run(void);
 
-	virtual void setMode(cTrafficLightModes newMode);
+	virtual void SetMode(TrafficLightModes_t newMode);
 };
 
 #endif /* CTRAFFICLIGHT_H_ */

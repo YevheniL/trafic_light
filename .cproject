@@ -19,8 +19,6 @@
 							<builder buildPath="${workspace_loc:/TraficLightTeacher}/Release" id="io.sloeber.sketch.builder.379357349" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Arduino sketch builder" superClass="io.sloeber.sketch.builder"/>
 							<tool id="io.sloeber.tool.sketch.compiler.cpp.1995147550" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp">
 								<option id="io.sloeber.compiler.cpp.sketch.option.incpath.1611097115" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TraficLightTeacher/core/core}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TraficLightTeacher/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/trafic_light_2017_2018/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/trafic_light_2017_2018/core/variant}&quot;"/>
 								</option>
@@ -28,8 +26,6 @@
 							</tool>
 							<tool id="io.sloeber.tool.compiler.c.1810901220" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c">
 								<option id="io.sloeber.compiler.c.sketch.option.incpath.1256588273" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TraficLightTeacher/core/core}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TraficLightTeacher/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/trafic_light_2017_2018/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/trafic_light_2017_2018/core/variant}&quot;"/>
 								</option>
@@ -37,8 +33,6 @@
 							</tool>
 							<tool id="io.sloeber.tool.sketch.compiler.s.1188766754" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s">
 								<option id="io.sloeber.compiler.asm.sketch.option.incpath.1890452639" name="Include Paths (-I)" superClass="io.sloeber.compiler.asm.sketch.option.incpath" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TraficLightTeacher/core/core}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/TraficLightTeacher/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/trafic_light_2017_2018/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/trafic_light_2017_2018/core/variant}&quot;"/>
 								</option>
@@ -66,5 +60,9 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/trafic_light_2017_2018"/>
+		</configuration>
+	</storageModule>
 </cproject>

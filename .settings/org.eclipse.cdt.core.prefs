@@ -166,10 +166,10 @@ environment/project/io.sloeber.core.toolChain.release.2070972133/A.EXTRA.TIME.DT
 environment/project/io.sloeber.core.toolChain.release.2070972133/A.EXTRA.TIME.DTS/value=0
 environment/project/io.sloeber.core.toolChain.release.2070972133/A.EXTRA.TIME.LOCAL/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.2070972133/A.EXTRA.TIME.LOCAL/operation=replace
-environment/project/io.sloeber.core.toolChain.release.2070972133/A.EXTRA.TIME.LOCAL/value=1511274865
+environment/project/io.sloeber.core.toolChain.release.2070972133/A.EXTRA.TIME.LOCAL/value=1511729448
 environment/project/io.sloeber.core.toolChain.release.2070972133/A.EXTRA.TIME.UTC/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.2070972133/A.EXTRA.TIME.UTC/operation=replace
-environment/project/io.sloeber.core.toolChain.release.2070972133/A.EXTRA.TIME.UTC/value=1511267665
+environment/project/io.sloeber.core.toolChain.release.2070972133/A.EXTRA.TIME.UTC/value=1511722248
 environment/project/io.sloeber.core.toolChain.release.2070972133/A.EXTRA.TIME.ZONE/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.2070972133/A.EXTRA.TIME.ZONE/operation=replace
 environment/project/io.sloeber.core.toolChain.release.2070972133/A.EXTRA.TIME.ZONE/value=7200
@@ -520,7 +520,7 @@ environment/project/io.sloeber.core.toolChain.release.2070972133/JANTJE.SELECTED
 environment/project/io.sloeber.core.toolChain.release.2070972133/JANTJE.SELECTED.PLATFORM/value=${eclipse_home}/arduinoPlugin/packages/arduino/hardware/avr/1.6.20
 environment/project/io.sloeber.core.toolChain.release.2070972133/JANTJE.SIZE.SWITCH/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.2070972133/JANTJE.SIZE.SWITCH/operation=replace
-environment/project/io.sloeber.core.toolChain.release.2070972133/JANTJE.SIZE.SWITCH/value=${A.RECIPE.SIZE.PATTERN}
+environment/project/io.sloeber.core.toolChain.release.2070972133/JANTJE.SIZE.SWITCH/value=${A.ALT_SIZE_COMMAND}
 environment/project/io.sloeber.core.toolChain.release.2070972133/JANTJE.UPLOAD.PATTERN/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.2070972133/JANTJE.UPLOAD.PATTERN/operation=replace
 environment/project/io.sloeber.core.toolChain.release.2070972133/JANTJE.UPLOAD.PATTERN/value=${A.TOOLS.AVRDUDE.UPLOAD.PATTERN}

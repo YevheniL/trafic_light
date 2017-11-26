@@ -54,6 +54,14 @@ void cLamp::Blink(uint16_t period) {
 void cLamp::SetMode(LampModes_t newMode){
 	mode = newMode;
 	startTime = millis();
+	switch(mode){
+	case lampOn :
+		on();
+		break;
+	case lampOff :
+		off();
+		break;
+	}
 }
 
 void cLamp::on(void) {

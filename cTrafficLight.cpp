@@ -1,17 +1,17 @@
 /*
  * cTrafficLight.cpp
  *
- *  Created on: Nov 21, 2017
- *      Author: SAK
+ *  Created on: 25 םמÿב. 2017 ד.
+ *      Author: ÃÏÂ
  */
 
 #include "cTrafficLight.h"
 
-void cTrafficLight::Run(){
+void cTrafficLight::Run(void){
 
 }
 
-void cTrafficLight::setMode(cTrafficLightModes newMode){
+void cTrafficLight::SetMode(TrafficLightModes_t newMode){
 
 }
 
