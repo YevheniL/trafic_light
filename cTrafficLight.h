@@ -12,9 +12,11 @@ typedef enum{
 	modeGreen,
 	modeGreenBlink,
 	modeRed,
+	modeService,
 	modeYellow,
 	modeRedYellow
 }TrafficLightModes_t;
+
 
 class cTrafficLight {
 public:

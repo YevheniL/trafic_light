@@ -23,11 +23,12 @@ private:
 	cLamp *lampGreen;
 	cLamp *lampRed;
 
-	const uint8_t modesTable[3][2] = {
-			   	   	   	   	   //Green  	Red
-		/* GreenMode */		{lampOn, 	lampOff},
-		/* GreenBlink */	{lampBlink, lampOff},
-		/* RedMode*/		{lampOff,	lampOn}
+	const LampModes_t modesTable[4][2] = {
+			   	   	   	   	     //Green  	Red
+		/* modeGreen */			{lampOn, 	lampOff},
+		/* modeGreenBlink */	{lampBlink, lampOff},
+		/* modeRed */			{lampOff,	lampOn},
+		/* modeService */		{lampOff,	lampOff},
 	};
 };
 
